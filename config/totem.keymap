@@ -21,7 +21,6 @@
 #define NAV     2
 #define SPECIAL 3
 #define GAME    4
-#define ADJ     5
 
 / {
     behaviors {
@@ -161,9 +160,6 @@ label= "NAV"                               ;
 
 // ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 //
-// Mellanlager - nås via tumknapp, används enbart för att komma vidare till
-// ADJ (BT/reset) eller GAME. Har inga egna bindningar förutom de två
-// ytterkolumnstangenterna.
                 special_layer {
 // ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 label= "SPECIAL"                           ;
@@ -173,7 +169,7 @@ label= "SPECIAL"                           ;
 //             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
 //             ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃    F4     ┃    F5     ┃    F6     ┃    F11    ┃
 // ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
-// ┃ TOG(ADJ)  ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃    F1     ┃    F2     ┃    F3     ┃    F10    ┃ TOG(GAME) ┃
+// ┃  (trans)  ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃    F1     ┃    F2     ┃    F3     ┃    F10    ┃ TOG(GAME) ┃
 // ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
 //                                     ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃
 //                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
@@ -182,7 +178,7 @@ label= "SPECIAL"                           ;
 
                &trans      &trans      &trans      &trans      &trans          &trans      &kp F7      &kp F8      &kp F9      &kp F12
                &trans      &trans      &trans      &trans      &trans          &trans      &kp F4      &kp F5      &kp F6      &kp F11
-  &tog ADJ     &trans      &trans      &trans      &trans      &trans          &trans      &kp F1      &kp F2      &kp F3      &kp F10      &tog GAME
+  &trans       &trans      &trans      &trans      &trans      &trans          &trans      &kp F1      &kp F2      &kp F3      &kp F10      &tog GAME
                                        &trans      &trans      &trans          &trans      &trans      &trans
                        >;
                 };
@@ -211,32 +207,3 @@ label= "GAME"                              ;
                               &lt NAV TAB  &lt SYM SPACE  &kp ESC        &kp RET &lt SYM BSPC  &lt SPECIAL DEL
                        >;
                 };
-
-// ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-//
-// BT/systemlager - nås via vänster ytterkolumn (spegelbild av GAME-togglingen
-// på höger sida). TOG(ADJ) sitter även här så man kan toggla ut igen samma väg.
-                adjust_layer {
-// ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-label= "ADJ"                               ;
-// ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-//             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
-//             ┃   RESET   ┃  BT CLR   ┃  OUT TOG  ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃    F7     ┃    F8     ┃    F9     ┃    F12    ┃
-//             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
-//             ┃ BOOTLOAD  ┃  BT NEXT  ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃    F4     ┃    F5     ┃    F6     ┃    F11    ┃
-// ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
-// ┃  TOG(ADJ) ┃  (trans)  ┃  BT PREV  ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃    F1     ┃    F2     ┃    F3     ┃    F10    ┃ (trans)   ┃
-// ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
-//                                     ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃
-//                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
- bindings = < 
-// ╷           ╷           ╷           ╷           ╷           ╷           ╷   ╷           ╷           ╷           ╷           ╷           ╷           ╷
-
-              &sys_reset   &bt BT_CLR  &out OUT_TOG &trans      &trans          &trans      &kp F7      &kp F8      &kp F9      &kp F12
-              &bootloader  &bt BT_NXT  &trans       &trans      &trans          &trans      &kp F4      &kp F5      &kp F6      &kp F11
-  &tog ADJ     &trans       &bt BT_PRV  &trans       &trans      &trans          &trans      &kp F1      &kp F2      &kp F3      &kp F10     &trans
-                                       &trans       &trans      &trans          &trans      &trans      &trans
-                       >;
-                };
-        };
-};
