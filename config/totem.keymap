@@ -51,8 +51,8 @@
         td_btick: tap_dance_backtick {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
-            tapping-term-ms = <50>;                  // TAP_DANCE_TERM
-            bindings = <&bare_grave>, <&kp LS(LA(N7))>;
+            tapping-term-ms = <200>;                  // TAP_DANCE_TERM
+            bindings = <&kp LS(EQUAL)>, <&kp SPACE>;
         };
     };
 
@@ -127,7 +127,7 @@ label= "SYM"                               ;
  bindings = < 
 // ╷           ╷           ╷           ╷           ╷           ╷           ╷   ╷           ╷           ╷           ╷           ╷           ╷           ╷
 
-              &kp BSLH     &kp LS(N2)   &kp LS(N6)  &kp LS(EQUAL) &kp LA(RBKT) &td_btick   &kp KP_N7  &kp KP_N8  &kp KP_N9  &kp KP_PLUS
+              &kp BSLH     &kp LS(N2)   &kp LS(N6)  &kp LS(MINUS) &kp LA(RBKT) &td_btick   &kp KP_N7  &kp KP_N8  &kp KP_N9  &kp KP_PLUS
               &kp LS(N1)   &kp RA(N2)   &kp LS(N3)   &kp RA(N4)   &kp LS(N5)   &kp LS(N7)  &kp KP_N4  &kp KP_N5  &kp KP_N6  &kp KP_N0
   &trans     &kp LS(SLASH) &kp LS(DOT) &kp LS(COMMA) &kp LS(N0)   &kp LS(BSLH) &kp LA(N7)  &kp KP_N1  &kp KP_N2  &kp KP_N3  &kp KP_MINUS   &trans
                                         &lt NAV TAB &lt SYM SPACE &kp ESC      &kp RET   &lt SYM BSPC &lt SPECIAL DEL
