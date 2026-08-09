@@ -49,8 +49,8 @@
         td_btick: tap_dance_backtick {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
-            tapping-term-ms = <200>;                  // TAP_DANCE_TERM
-            bindings = <&kp LS(EQUAL)>, <&kp SPACE>;
+            tapping-term-ms = <200>;
+            bindings = <&bare_grave>, <&kp LS(LA(N7))>;
         };
     };
 
@@ -61,7 +61,7 @@
         bare_grave: bare_grave {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings = <&kp LS(GRAVE)>, <&kp SPACE>;
+            bindings = <&kp LS(EQUAL)>, <&kp SPACE>;
         };
     };
 
