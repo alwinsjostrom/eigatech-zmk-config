@@ -1,9 +1,10 @@
+// geist-totem.keymap
 //
 //                                                        ▀▀▀▀▀     ▀▀▀▀▀          ▀▀█▀▀
 //                                                        ▄▀▀▀▄  ▄  ▄▀▀▀▄  ▄  ▄▀▀▀▄  █  ▄▀▀▀▄
 //                                                        █   █  █  █   █  █  █   █  █  █   █
 //                                                         ▀▀▀   █   ▀▀▀   █   ▀▀▀   ▀   ▀▀▀
-//                                                               █      ▄▄▄█▄▄▄    █   █  
+//                                                               █      ▄▄▄█▄▄▄    █   █
 //                                                               ▀      █  █  █     █▄█
 //                                                             ▀▀▀▀▀    █  █  █      ▀
 //                                                                      ▀  ▀  ▀
@@ -12,104 +13,230 @@
 
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/outputs.h>
 
-#define Base        0
-#define Nav         1
-#define Sym         2
-#define Fun         3
-#define Game        4
-#define Gameplus    5
-
-&mt {
-    quick-tap-ms = <100>;
-    global-quick-tap;
-    flavor = "tap-preferred";
-    tapping-term-ms = <170>;
-};
-
-&lt {
-    tapping-term-ms = <240>;
-    flavor = "balanced";
-    quick-tap-ms = <150>;
-};
+#define BASE    0
+#define SYM     1
+#define NAV     2
+#define SPECIAL 3
+#define GAME    4
+#define ADJ     5
 
 / {
     behaviors {
-        hm: homerow_mods {
+        // Home row mods, uppdelade vänster/höger hand. hold-trigger-key-positions
+        // listar MOTSATT hands positioner -> ett hold "räknas" bara om en tangent
+        // på andra handen trycks samtidigt, vilket efterliknar CHORDAL_HOLD.
+        hml: home_row_mod_left {
             compatible = "zmk,behavior-hold-tap";
-            label = "HOMEROW_MODS";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <200>;                 // TAPPING_TERM från din config.h
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <5 6 7 8 9 15 16 17 18 19 26 27 28 29 30 31 35 36 37>; // höger hand + höger tumme
+            hold-trigger-on-release;
+        };
+        hmr: home_row_mod_right {
+            compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "tap-preferred";
             tapping-term-ms = <200>;
-            quick-tap-ms = <125>;
-            global-quick-tap;
             bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <0 1 2 3 4 10 11 12 13 14 20 21 22 23 24 25 32 33 34>; // vänster hand + vänster tumme
+            hold-trigger-on-release;
+        };
+        // Enkeltryck = bare_grave (` utan att vänta på nästa tecken).
+        // Dubbeltryck = \ (Shift+Option+7 på svensk Mac-layout).
+        td_btick: tap_dance_backtick {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <50>;                  // TAP_DANCE_TERM
+            bindings = <&bare_grave>, <&kp LS(LA(N7))>;
         };
     };
 
-    combos { compatible = "zmk,combos"; };
+    macros {
+        // ` är en dead key på svensk Mac. GRAVE följt av SPACE tvingar fram
+        // ett fristående backtick-tecken istället för att vänta på en bokstav
+        // att kombinera accenten med (samma trick som din SEND_STRING gjorde).
+        bare_grave: bare_grave {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LS(GRAVE)>, <&kp SPACE>;
+        };
+    };
+
+    combos {
+        compatible = "zmk,combos";
+        // key-positions syftar på indexen i bindings-arrayen nedan (rad0=0-9,
+        // rad1=10-19, rad2=20-31 inkl. ytterkolumner, tummar=32-37).
+        // combo_reset  { timeout-ms = <50>; key-positions = <1 2 3 6 7 8>;   bindings = <&bootloader>; };      // w e r u i o -> boot
+        combo_er     { timeout-ms = <40>; key-positions = <2 3>;   bindings = <&kp LA(N8)>; };               // e+r -> [
+        combo_df     { timeout-ms = <40>; key-positions = <12 13>; bindings = <&kp LS(N8)>; };               // d+f -> (
+        combo_cv     { timeout-ms = <40>; key-positions = <23 24>; bindings = <&kp RS(RA(N8))>; };           // c+v -> {
+        combo_we     { timeout-ms = <40>; key-positions = <1 2>;   bindings = <&bare_grave>; };              // w+e -> `
+        combo_ui     { timeout-ms = <40>; key-positions = <6 7>;   bindings = <&kp LA(N9)>; };               // u+i -> ]
+        combo_jk     { timeout-ms = <40>; key-positions = <16 17>; bindings = <&kp LS(N9)>; };               // j+k -> )
+        combo_mcomma { timeout-ms = <40>; key-positions = <27 28>; bindings = <&kp RS(RA(N9))>; };           // m+, -> }
+        combo_io     { timeout-ms = <40>; key-positions = <7 8>;   bindings = <&kp LS(GRAVE)>; };            // i+o -> >
+    };
 
     keymap {
         compatible = "zmk,keymap";
+// ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 
-        Base {
-            display-name = "Base";
-            bindings = <
-              &kp Q       &kp W       &kp E          &kp R         &kp T        &kp Y    &kp U        &kp I        &kp O       &kp P
-              &hm LGUI A  &hm LALT S  &hm LCTRL D    &hm LSHIFT F  &kp G        &kp H    &hm RSHFT J  &hm RCTRL K  &hm RALT L  &hm RGUI SEMICOLON
-&lt 3 ESCAPE  &kp Z       &kp X       &kp C          &kp V         &kp B        &kp N    &kp M        &kp COMMA    &kp DOT     &kp SLASH           &kp APOSTROPHE
-                                      &mt LCTRL DEL  &lt 1 TAB     &kp SPACE    &kp RET  &lt 2 BSPC   &kp MINUS
-            >;
-        };
+                base_layer {
+// ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+label= "BASE"                              ;
+// ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+//             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
+//             ┃     Q     ┃     W     ┃     E     ┃     R     ┃     T     ┃   ┃     Y     ┃     U     ┃     I     ┃     O     ┃     P     ┃
+//             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
+//             ┃   GUI/A   ┃   ALT/S   ┃  CTRL/D   ┃  SHFT/F   ┃     G     ┃   ┃     H     ┃  SHFT/J   ┃  CTRL/K   ┃   ALT/L   ┃   GUI/;   ┃
+// ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
+// ┃  (none)   ┃     Z     ┃     X     ┃     C     ┃     V     ┃     B     ┃   ┃     N     ┃     M     ┃     ,     ┃     .     ┃     -     ┃  (none)   ┃
+// ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+//                                     ┃  Tab/NAV  ┃  Spc/SYM  ┃    ESC    ┃   ┃    ENT    ┃ Bspc/SYM  ┃Del/SPECIAL┃
+//                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+ bindings = < 
+// ╷           ╷           ╷           ╷           ╷           ╷           ╷   ╷           ╷           ╷           ╷           ╷           ╷           ╷
 
-        Nav {
-            display-name = "Nav";
-            bindings = <
-              &kp TILDE       &trans     &kp UP_ARROW  &trans     &kp LBRC    &kp RBRC  &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &kp NUMBER_0
-              &kp LEFT_SHIFT  &kp LEFT   &kp DOWN      &kp RIGHT  &kp LBKT    &kp RBKT  &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &kp MINUS
-&kp LEFT_ALT  &kp LEFT_WIN    &kp MINUS  &trans        &kp PLUS   &kp LPAR    &kp RPAR  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &kp KP_MULTIPLY  &kp PLUS
-                                         &trans        &trans     &trans      &trans    &trans        &kp DOT
-            >;
-        };
+               &kp Q          &kp W          &kp E          &kp R          &kp T          &kp Y       &kp U          &kp I          &kp O          &kp P
+               &hml LGUI A    &hml LALT S    &hml LCTRL D   &hml LSHFT F   &kp G          &kp H       &hmr RSHFT J   &hmr RCTRL K   &hmr LALT L    &hmr RGUI SEMI
+   &none       &kp Z          &kp X          &kp C          &kp V          &kp B          &kp N       &kp M          &kp COMMA      &kp DOT        &kp SLASH      &none
+                                             &lt NAV TAB    &lt SYM SPACE  &kp ESC        &kp RET     &lt SYM BSPC   &lt SPECIAL DEL
+                       >;
+                };
 
-        Sym {
-            display-name = "Sym";
-            bindings = <
-                &kp EXCL  &kp AT  &kp HASH  &kp DOLLAR  &kp PERCENT    &kp CARET  &kp AMPERSAND  &kp KP_ASTERISK  &kp SQT  &kp DQT
-                &trans    &trans  &trans    &trans      &trans         &trans     &trans         &trans           &trans   &trans
-&studio_unlock  &trans    &trans  &trans    &trans      &trans         &kp UNDER  &kp EQUAL      &trans           &trans   &kp SLASH  &kp HOME
-                                  &trans    &trans      &trans         &trans     &trans         &trans
-            >;
-        };
+// ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 
-        Fun {
-            display-name = "Fun";
-            bindings = <
-        &bootloader  &trans  &trans  &trans  &to 4     &trans  &trans  &trans  &kp END  &kp F1
-        &trans       &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans   &kp F10
-&trans  &trans       &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans   &kp F20  &kp F7
-                             &trans  &trans  &trans    &trans  &trans  &trans
-            >;
-        };
+                sym_layer {
+// ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+label= "SYM"                               ;
+// ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+//             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
+//             ┃     '     ┃     "     ┃     &     ┃     ?     ┃  ~[dead]  ┃   ┃  `/\ [TD] ┃     7     ┃     8     ┃     9     ┃     +     ┃
+//             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
+//             ┃     !     ┃     @     ┃     #     ┃     $     ┃     %     ┃   ┃     /     ┃     4     ┃     5     ┃     6     ┃     0     ┃
+// ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
+// ┃ (trans)   ┃     _     ┃     :     ┃     ;     ┃     =     ┃     *     ┃   ┃     |     ┃     1     ┃     2     ┃     3     ┃     -     ┃ (trans)   ┃
+// ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+//                                     ┃  Tab/NAV  ┃  Spc/SYM  ┃    ESC    ┃   ┃    ENT    ┃ Bspc/SYM  ┃Del/SPECIAL┃
+//                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+ bindings = < 
+// ╷           ╷           ╷           ╷           ╷           ╷           ╷   ╷           ╷           ╷           ╷           ╷           ╷           ╷
 
-        Gaming {
-            display-name = "Game";
-            bindings = <
-            &kp Z           &kp X  &kp C      &kp V         &sl 5     &trans  &trans  &trans  &trans  &trans
-            &kp TAB         &kp Q  &kp W      &kp E         &kp R     &trans  &trans  &trans  &trans  &trans
-&kp ESCAPE  &kp LEFT_SHIFT  &kp A  &kp S      &kp D         &kp F     &trans  &trans  &trans  &trans  &trans  &trans
-                                   &kp LCTRL  &kp LEFT_ALT  &trans    &trans  &trans  &trans
-            >;
-        };
+              &kp BSLH     &kp LS(N2)   &kp LS(N6)  &kp LS(EQUAL) &kp LA(RBKT) &td_btick   &kp KP_N7  &kp KP_N8  &kp KP_N9  &kp KP_PLUS
+              &kp LS(N1)   &kp RA(N2)   &kp LS(N3)   &kp RA(N4)   &kp LS(N5)   &kp LS(N7)  &kp KP_N4  &kp KP_N5  &kp KP_N6  &kp KP_N0
+  &trans     &kp LS(SLASH) &kp LS(DOT) &kp LS(COMMA) &kp LS(N0)   &kp LS(BLSH) &kp LA(N7)  &kp KP_N1  &kp KP_N2  &kp KP_N3  &kp KP_MINUS   &trans
+                                        &lt NAV TAB &lt SYM SPACE &kp ESC      &kp RET   &lt SYM BSPC &lt SPECIAL DEL
+                       >;
+                };
 
-        Gaming+ {
-            display-name = "Game+";
-            bindings = <
-        &kp F10  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &kp T     &kp RA(RC(Y))  &kp RA(RC(U))  &trans  &trans  &kp LC(RA(DEL))
-        &kp L    &kp O         &kp Y         &kp K         &kp G     &kp F5         &kp F7         &trans  &trans  &kp F12
-&trans  &to 0    &trans        &trans        &trans        &trans    &trans         &trans         &trans  &trans  &kp F22          &kp LA(F4)
-                               &kp J         &kp I         &kp M     &trans         &trans         &trans
-            >;
+// ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+
+                nav_layer {
+// ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+label= "NAV"                               ;
+// ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+//             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
+//             ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃
+//             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
+//             ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃   LEFT    ┃   DOWN    ┃    UP     ┃   RIGHT   ┃ (trans)   ┃
+// ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
+// ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃
+// ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+//                                     ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃
+//                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+ bindings = < 
+// ╷           ╷           ╷           ╷           ╷           ╷           ╷   ╷           ╷           ╷           ╷           ╷           ╷           ╷
+
+              &trans      &trans      &trans      &trans      &trans          &trans      &trans      &trans      &trans      &trans
+              &trans      &trans      &trans      &trans      &trans          &kp LEFT    &kp DOWN    &kp UP      &kp RIGHT   &trans
+  &trans      &trans      &trans      &trans      &trans      &trans          &trans      &trans      &trans      &trans      &trans      &trans
+                                      &trans      &trans      &trans          &trans      &trans      &trans
+                       >;
+                };
+
+// ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+//
+// Mellanlager - nås via tumknapp, används enbart för att komma vidare till
+// ADJ (BT/reset) eller GAME. Har inga egna bindningar förutom de två
+// ytterkolumnstangenterna.
+                special_layer {
+// ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+label= "SPECIAL"                           ;
+// ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+//             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
+//             ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃
+//             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
+//             ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃
+// ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
+// ┃ TOG(ADJ)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃ TOG(GAME)  ┃
+// ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+//                                     ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃
+//                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+ bindings = < 
+// ╷           ╷           ╷           ╷           ╷           ╷           ╷   ╷           ╷           ╷           ╷           ╷           ╷           ╷
+
+              &trans      &trans      &trans      &trans      &trans          &trans      &trans      &trans      &trans      &trans
+              &trans      &trans      &trans      &trans      &trans          &trans      &trans      &trans      &trans      &trans
+  &tog ADJ     &trans      &trans      &trans      &trans      &trans          &trans      &trans      &trans      &trans      &trans      &tog GAME
+                                      &trans      &trans      &trans          &trans      &trans      &trans
+                       >;
+                };
+
+// ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+
+                game_layer {
+// ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+label= "GAME"                              ;
+// ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+//             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
+//             ┃     Q     ┃     W     ┃     E     ┃     R     ┃     T     ┃   ┃     Y     ┃     U     ┃     I     ┃     O     ┃     P     ┃
+//             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
+//             ┃     A     ┃     S     ┃     D     ┃     F     ┃     G     ┃   ┃     H     ┃     J     ┃     K     ┃     L     ┃ (none)    ┃
+// ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
+// ┃ (trans)   ┃     Z     ┃     X     ┃     C     ┃     V     ┃     B     ┃   ┃     N     ┃     M     ┃     ,     ┃     .     ┃     -     ┃ TOG(GAME)  ┃
+// ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+//                                     ┃  Tab/NAV  ┃  Spc/SYM  ┃    ESC    ┃   ┃    ENT    ┃ Bspc/SYM  ┃Del/SPECIAL┃
+//                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+ bindings = < 
+// ╷           ╷           ╷           ╷           ╷           ╷           ╷   ╷           ╷           ╷           ╷           ╷           ╷           ╷
+
+              &kp Q      &kp W      &kp E      &kp R      &kp T          &kp Y      &kp U      &kp I      &kp O      &kp P
+              &kp A      &kp S      &kp D      &kp F      &kp G          &kp H      &kp J      &kp K      &kp L      &none
+  &trans      &kp Z      &kp X      &kp C      &kp V      &kp B          &kp N      &kp M      &kp COMMA  &kp DOT    &kp MINUS   &tog GAME
+                              &lt NAV TAB  &lt SYM SPACE  &kp ESC        &kp RET &lt SYM BSPC  &lt SPECIAL DEL
+                       >;
+                };
+
+// ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+//
+// BT/systemlager - nås via vänster ytterkolumn (spegelbild av GAME-togglingen
+// på höger sida). TOG(ADJ) sitter även här så man kan toggla ut igen samma väg.
+                adjust_layer {
+// ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+label= "ADJ"                               ;
+// ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+//             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
+//             ┃   RESET   ┃  BT CLR   ┃  OUT TOG  ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃    F7     ┃    F8     ┃    F9     ┃    F12    ┃
+//             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
+//             ┃ BOOTLOAD  ┃  BT NEXT  ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃    F4     ┃    F5     ┃    F6     ┃    F11    ┃
+// ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
+// ┃ TOG(ADJ)   ┃ (trans)   ┃  BT PREV  ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃    F1     ┃    F2     ┃    F3     ┃    F10    ┃ (trans)   ┃
+// ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+//                                     ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃   ┃ (trans)   ┃ (trans)   ┃ (trans)   ┃
+//                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+ bindings = < 
+// ╷           ╷           ╷           ╷           ╷           ╷           ╷   ╷           ╷           ╷           ╷           ╷           ╷           ╷
+
+              &sys_reset   &bt BT_CLR  &out OUT_TOG &trans      &trans          &trans      &kp F7      &kp F8      &kp F9      &kp F12
+              &bootloader  &bt BT_NXT  &trans       &trans      &trans          &trans      &kp F4      &kp F5      &kp F6      &kp F11
+  &tog ADJ     &trans       &bt BT_PRV  &trans       &trans      &trans          &trans      &kp F1      &kp F2      &kp F3      &kp F10     &trans
+                                       &trans       &trans      &trans          &trans      &trans      &trans
+                       >;
+                };
         };
-    };
 };
