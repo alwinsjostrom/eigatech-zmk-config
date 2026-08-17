@@ -87,7 +87,7 @@
         combo_er     { timeout-ms = <40>; key-positions = <2 3>;   bindings = <&kp LA(N8)>; };               // e+r -> [
         combo_df     { timeout-ms = <40>; key-positions = <12 13>; bindings = <&kp LS(N8)>; };               // d+f -> (
         combo_cv     { timeout-ms = <40>; key-positions = <23 24>; bindings = <&kp RS(RA(N8))>; };           // c+v -> {
-        combo_we     { timeout-ms = <40>; key-positions = <1 2>;   bindings = <&bare_grave>; };              // w+e -> `
+        combo_we     { timeout-ms = <40>; key-positions = <1 2>;   bindings = <&kp GRAVE>; };                // w+e -> <
         combo_ui     { timeout-ms = <40>; key-positions = <6 7>;   bindings = <&kp LA(N9)>; };               // u+i -> ]
         combo_jk     { timeout-ms = <40>; key-positions = <16 17>; bindings = <&kp LS(N9)>; };               // j+k -> )
         combo_mcomma { timeout-ms = <40>; key-positions = <27 28>; bindings = <&kp RS(RA(N9))>; };           // m+, -> }
